@@ -1,3 +1,9 @@
+#![no_std]
+#![cfg_attr(feature = "nightly",
+    feature(external_doc),
+    doc(include = "../README.md"),
+)]
+
 extern crate proc_macros;
 
 #[doc(hidden)] /** Not part of the public API **/

@@ -1,0 +1,16 @@
+[lib]
+proc-macro = true
+path = "mod.rs"
+
+[package]
+name = "defile-proc_macros"
+version = "0.1.0"
+authors = ["Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>"]
+edition = "2018"
+
+description = "See https://docs.rs/defile"
+documentation = "https://docs.rs/defile"
+homepage = "https://docs.rs/defile"
+repository = "https://github.com/danielhenrymantilla/rust-defile"
+
+license = "Zlib"

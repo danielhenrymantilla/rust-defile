@@ -1,0 +1,27 @@
+[package]
+name = "defile"
+version = "0.1.0"
+authors = ["Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>"]
+edition = "2018"
+
+description = "Fast-to-compile equivalent to `::paste`"
+documentation = "https://docs.rs/defile"
+homepage = "https://crates.io/crates/defile"
+repository = "https://github.com/danielhenrymantilla/rust-defile"
+
+license = "Zlib"
+
+[dependencies.proc_macros]
+package = "defile-proc_macros"
+path = "src/proc_macros"
+version = "0.1.0"
+
+[workspace]
+members = ["src/proc_macros"]
+
+
+[features]
+nightly = []
+
+[package.metadata.docs.rs]
+all-features = true

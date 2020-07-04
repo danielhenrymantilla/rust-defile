@@ -36,6 +36,7 @@ fn map (input: TokenStream)
     ret
 }
 
+/** Not part of the public API **/ #[doc(hidden)]
 #[proc_macro] pub
 fn __item__ (input: TokenStream)
   -> TokenStream

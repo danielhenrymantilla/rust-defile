@@ -1,6 +1,6 @@
 [package]
 name = "defile"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Daniel Henry-Mantilla <daniel.henry.mantilla@gmail.com>"]
 edition = "2018"
 
@@ -14,7 +14,7 @@ license = "Zlib"
 [dependencies.proc_macros]
 package = "defile-proc_macros"
 path = "src/proc_macros"
-version = "0.1.0"
+version = "0.1.1"
 
 [workspace]
 members = ["src/proc_macros"]

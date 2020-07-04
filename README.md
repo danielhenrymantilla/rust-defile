@@ -1,4 +1,4 @@
-# `::rust-defile`
+# `::defile`
 
 Helper proc-macro to "ungroup" a captured metavariable (thus potentially breaking their hygiene, hence the name).
 

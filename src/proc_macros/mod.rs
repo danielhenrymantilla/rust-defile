@@ -7,30 +7,32 @@ use ::proc_macro::{*,
 fn map (input: TokenStream)
   -> TokenStream
 {
-    let mut tokens = input.into_iter();
+    let mut tokens = input.into_iter().peekable();
     let mut ret = TokenStream::new();
     while let Some(tt) = tokens.next() {
         ret.extend(Some(match tt {
             | TT::Punct(ref p)
                 if p.as_char() == '@'
-            => match tokens.next() {
-                | Some(TT::Group(ref group))
+            => match tokens.peek() {
+                | Some(&TT::Group(ref group))
                     if group.delimiter() == Delimiter::None
                 => {
                     ret.extend(map(group.stream()));
+                    drop(tokens.next());
                     continue;
                 },
-                | _ => {
-                    tt
-                },
+                | Some(TT::Punct(ref p))
+                    if p.as_char() == '@'
+                => {
+                    tokens.next().unwrap()
+                }
+                | _ => continue,
             },
             | TT::Group(group) => {
                 Group::new(group.delimiter(),  map(group.stream()))
                     .into()
             },
-            | _ => {
-                tt
-            },
+            | _ => tt,
         }));
     }
     ret

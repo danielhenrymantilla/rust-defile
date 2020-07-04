@@ -25,6 +25,15 @@ macro_rules! __as_item__ {(
 )}
 
 /// Macro to be used to expand to an item definition.
+///
+/// ### Usage
+///
+/// Wrap the whole expression expansion (containing the call to the
+/// submacro) within this macro, and prefix the metavariables you wish
+/// to ungroup with `@`.
+///
+/// If you need to emit an `@` sigil (be it for the helper macro, or for actual
+/// Rust syntax), simply escape the sigil by doubling it: `@@`.
 #[macro_export]
 macro_rules! item {(
     $($input:tt)*
@@ -37,6 +46,15 @@ macro_rules! item {(
 )}
 
 /// Macro to be used to expand to an expression.
+///
+/// ### Usage
+///
+/// Wrap the whole expression expansion (containing the call to the
+/// submacro) within this macro, and prefix the metavariables you wish
+/// to ungroup with `@`.
+///
+/// If you need to emit an `@` sigil (be it for the helper macro, or for actual
+/// Rust syntax), simply escape the sigil by doubling it: `@@`.
 #[macro_export]
 macro_rules! expr {(
     $($input:tt)*

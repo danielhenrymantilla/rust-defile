@@ -85,7 +85,8 @@ But by doing:
       fn main () {
           $(
               println!("vvvvvvvvvvvvv");
-              check_expr!(@$expr); // put `@` before a metavariable to ungroup it
+-             check_expr!($expr);
++             check_expr!(@$expr); // put `@` before a metavariable to ungroup it
               println!("^^^^^^^^^^^^^\n");
           )*
       }

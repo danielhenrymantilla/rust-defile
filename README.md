@@ -4,7 +4,7 @@ Helper proc-macro to "ungroup" a captured metavariable (thus potentially breakin
 
 This is useful when using helper `macro_rules` macros, that need to parse using some special rule (_e.g._ `:expr`, `:path`, `:pat`), but that later want to further inspect the captured variable.
 
-This is not something a `macro_rules!` can do on its own, since such so-called _metavariables_ are seen as an **opaque** single token (`:tt`) (the sequence of tokens captured in the metavariable have been _grouped_ (≈ parenthesized) but using invsibile parenthesis.
+This is not something a `macro_rules!` can do on its own, since such so-called _metavariables_ are seen as an **opaque** single token (`:tt`) (the sequence of tokens captured in the metavariable have been _grouped_ (≈ parenthesized) but using invisible parenthesis.
 
 ## Example
 
@@ -64,7 +64,7 @@ Did not get `42`. Instead, got the following tokens:
 
   - That is:
 
-    - the token `42` not match `42`!
+    - The token `42` does not match `42`!
 
     - That being said, the expression `1 + 1` is viewed as a single indivisible
       token too.

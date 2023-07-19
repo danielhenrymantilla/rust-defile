@@ -20,7 +20,7 @@ macro_rules! check_all_exprs {(
     $(
         $expr:expr
     ),* $(,)?
-) => (::defile::__item__! {
+) => (::defile::defile! {
     fn main () {
         $(
             println!("vvvvvvvvvvvvv");

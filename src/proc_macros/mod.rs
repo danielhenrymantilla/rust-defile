@@ -4,33 +4,51 @@ use ::proc_macro::{*,
     TokenTree as TT,
 };
 
-fn map (input: TokenStream)
+fn recursive_map(input: TokenStream)
   -> TokenStream
 {
     let mut tokens = input.into_iter().peekable();
     let mut ret = TokenStream::new();
-    while let Some(tt) = tokens.next() {
-        ret.extend(Some(match tt {
+    while let Some(mut tt) = tokens.next() {
+        ret.extend(::core::iter::once(match tt {
             | TT::Punct(ref p)
                 if p.as_char() == '@'
+            // We got a `@`, times to see whether…
             => match tokens.peek() {
-                | Some(&TT::Group(ref group))
-                    if group.delimiter() == Delimiter::None
+                // …it prefixes a `None`-delimited group: time for `defile!` to
+                // do its job!
+                | Some(&TT::Group(ref g))
+                    if g.delimiter() == Delimiter::None
                 => {
-                    ret.extend(map(group.stream()));
+                    // discard the outer `Group` layering, and only pass its
+                    // innards
+                    ret.extend(recursive_map(g.stream()));
                     drop(tokens.next());
                     continue;
                 },
+
+                // …it prefixes another `@`, which means we got `@@`: escape
+                // case! Only pass a single `@` through.
                 | Some(TT::Punct(ref p))
                     if p.as_char() == '@'
                 => {
                     tokens.next().unwrap()
                 }
+                // …something ungrouped (maybe the metavar did not group it?)
+                // this is kind of weird, and could stem from user-provided
+                // `:tt`s. We nonetheless assume it's a macro-author-provided @
+                // just in front of an ungrouped tt, for which there is nothing
+                // to do. We "drop" the current `:tt = '@'`, and `continue`.
                 | _ => continue,
             },
-            | TT::Group(group) => {
-                Group::new(group.delimiter(),  map(group.stream()))
-                    .into()
+            // otherwise, deep-recurse if needed, else pass-through.
+            | TT::Group(ref mut g) => {
+                let (delimiter, its_span, inner_tokens) =
+                    (g.delimiter(), g.span(), g.stream())
+                ;
+                *g = Group::new(delimiter, recursive_map(inner_tokens));
+                g.set_span(its_span);
+                tt
             },
             | _ => tt,
         }));
@@ -38,68 +56,9 @@ fn map (input: TokenStream)
     ret
 }
 
-/** Not part of the public API **/ #[doc(hidden)]
 #[proc_macro] pub
-fn __item__ (input: TokenStream)
+fn defile(input: TokenStream)
   -> TokenStream
 {
-    map(input)
-}
-
-/** Not part of the public API **/ #[doc(hidden)]
-#[proc_macro_derive(__expr_hack__)] pub
-fn __expr_hack__ (input: TokenStream)
-  -> TokenStream
-{
-    // enum
-    // EnumName
-    // {
-    //     VariantName
-    //     =
-    //     (
-    //         stringify
-    //         !
-    //         (
-    //             <input>
-    //         )
-    // , 0).1,}
-
-    let mut tokens = input.into_iter();
-    // `enum EnumName`
-    let _ = tokens.by_ref().take(2).for_each(drop);
-    // `{ <tokens> }`
-    let mut tokens = if let Some(TT::Group(it)) = tokens.next() { it } else {
-        panic!()
-    }.stream().into_iter();
-    // `VariantName =`
-    let _ = tokens.by_ref().take(2).for_each(drop);
-    // `( <tokens> )`
-    let mut tokens = if let Some(TT::Group(it)) = tokens.next() { it } else {
-        panic!()
-    }.stream().into_iter();
-    // `stringify !`
-    let _ = tokens.by_ref().take(2).for_each(drop);
-    // `( <input> )`
-    let input = if let Some(TT::Group(it)) = tokens.next() { it } else {
-        panic!()
-    }.stream();
-    let ret = map(input);
-    let span = Span::call_site();
-    vec![
-        TT::Ident(Ident::new("macro_rules", span)),
-        TT::Punct(Punct::new('!', Spacing::Alone)),
-        TT::Ident(Ident::new("__defile__Hack__", span)),
-        TT::Group(Group::new(
-            Delimiter::Brace,
-            vec![
-                TT::Group(Group::new(Delimiter::Parenthesis, TokenStream::new())),
-                TT::Punct(Punct::new('=', Spacing::Joint)),
-                TT::Punct(Punct::new('>', Spacing::Alone)),
-                TT::Group(Group::new(
-                    Delimiter::Parenthesis,
-                    ret,
-                )),
-            ].into_iter().collect(),
-        )),
-    ].into_iter().collect()
+    recursive_map(input)
 }

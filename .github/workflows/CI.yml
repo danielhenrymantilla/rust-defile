@@ -61,9 +61,9 @@ jobs:
         rust-toolchains:
           - 1.54.0
           - stable
-    exclude:
-      - os: 'macos-latest'
-        rust-toolchains: '1.54.0'
+        exclude:
+          - os: 'macos-latest'
+            rust-toolchains: '1.54.0'
     steps:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
